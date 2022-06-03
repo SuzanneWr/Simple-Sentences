@@ -2,6 +2,9 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt 
 from PyQt5.QtGui import *
+#from nltk.corpus import*
+#from nltk.book import*
+from Functions import generateSentences
 
 class Window(QMainWindow):
 	def __init__(self):
@@ -41,6 +44,8 @@ class Window(QMainWindow):
 			}
 		""")
 		
+		corpus = ""
+
 		self.setWindowIcon(QIcon('icon.png'))
 		self.setWindowTitle('Simple Sentences')
 		self.setGeometry(0, 0, 800, 800)
@@ -83,13 +88,37 @@ class Window(QMainWindow):
 	
 		self.show()
 		
-	def loadCorpus(self):
-		self.corpusExcerpt.setText(self.corpusSelect.currentText())
+	def loadCorpus(self, s):
+		#self.corpusExcerpt.setText(self.corpusSelect.currentText())
+		dlg = FileLoader()
+		if dlg.exec():
+			print("success")
+		else:
+			print("failure")
+		
 		
 	def generateSentence(self):
-		self.generatedSentence.setText(self.corpusSelect.currentText())
+		finishedSentence = generateSentences(int(self.sentenceLength.text()), self.startWord.text(), corpus)
+		self.generatedSentence.setText(finishedSentence)
 		
 		
+class FileLoader(QDialog):
+	def __init__(self):
+		super().__init__()
+
+		self.setWindowTitle('Select Text File')
+		QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+
+		self.buttonBox = QDialogButtonBox(QBtn)
+		self.buttonBox.accepted.connect(self.accept)
+		self.buttonBox.rejected.connect(self.reject)
+
+		self.layout = QVBoxLayout()
+		message = QLabel("uh oh")
+		self.layout.addWidget(message)
+		self.layout.addWidget(self.buttonBox)
+		self.setLayout(self.layout)
+
 app = QApplication(sys.argv)
 window = Window()
 sys.exit(app.exec_())
